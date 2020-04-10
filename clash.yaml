@@ -118,23 +118,11 @@ Proxy:
 
 
 # 配置开始
-- name: "V2ray节点的主机测试"
-  type: vmess
-  server: v2rayssr.com
-  port: 443
-  uuid: 5b8098e0-c95d-4c74-b5d5-4a330969c8cb
-  alterId: 2
-  cipher: auto
-  tls: true
-  network: ws
-  ws-path: /v2rayssrcom/
-  Host: v2rayssr.com
-
 - name: "Trojan节点的主机测试"
   type: trojan
-  server: www.v2rayssr.com
+  server: hk.longzml.xyz
   port: 443
-  password: v2rayssr.com
+  password: longzml:Fuck1024
 
  
 ###############################################################配置分割线
