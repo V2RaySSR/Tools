@@ -1,0 +1,101 @@
+#!/bin/bash
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+NAME_BIN="rclone"
+### BEGIN INIT INFO
+# Provides:          rclone
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start rclone at boot time
+# Description:       Enable rclone by daemon.
+### END INIT INFO
+
+NAME="GDnf" #rclone name名
+REMOTE='' #远程文件夹
+LOCAL='/volume3/Drive/Nas.Gdrive' #挂载地址
+
+
+Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
+Info="${Green_font_prefix}[信息]${Font_color_suffix}"
+Error="${Red_font_prefix}[错误]${Font_color_suffix}"
+RETVAL=0
+
+check_running(){
+	PID="$(ps -C $NAME_BIN -o pid= |head -n1 |grep -o '[0-9]\{1,\}')"
+	if [[ ! -z ${PID} ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+do_start(){
+	check_running
+	if [[ $? -eq 0 ]]; then
+		echo -e "${Info} $NAME_BIN (PID ${PID}) 正在运行..." && exit 0
+	else
+	
+		fusermount -zuq $LOCAL >/dev/null 2>&1
+		mkdir -p $LOCAL
+		sudo /usr/bin/rclone mount $NAME:$REMOTE $LOCAL --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000 --low-level-retries 200 --dir-cache-time 12h --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 1G >/dev/null 2>&1 &
+		sleep 2s
+		
+		fusermount -zuq $LOCAL1 >/dev/null 2>&1
+		mkdir -p $LOCAL1
+		sudo /usr/bin/rclone mount $NAME1:$REMOTE1 $LOCAL1 --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000 --low-level-retries 200 --dir-cache-time 12h --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 1G >/dev/null 2>&1 &
+		sleep 2s
+		
+		fusermount -zuq $LOCAL2 >/dev/null 2>&1
+		mkdir -p $LOCAL2
+		sudo /usr/bin/rclone mount $NAME2:$REMOTE2 $LOCAL2 --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000 --low-level-retries 200 --dir-cache-time 12h --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 1G >/dev/null 2>&1 &
+		sleep 2s
+		
+		check_running
+		if [[ $? -eq 0 ]]; then
+			echo -e "${Info} $NAME_BIN 启动成功 !"
+		else
+			echo -e "${Error} $NAME_BIN 启动失败 !"
+		fi
+	fi
+}
+do_stop(){
+	check_running
+	if [[ $? -eq 0 ]]; then
+		kill -9 ${PID}
+		RETVAL=$?
+		if [[ $RETVAL -eq 0 ]]; then
+			echo -e "${Info} $NAME_BIN 停止成功 !"
+		else
+			echo -e "${Error} $NAME_BIN 停止失败 !"
+		fi
+	else
+		echo -e "${Info} $NAME_BIN 未运行"
+		RETVAL=1
+	fi
+	fusermount -zuq $LOCAL >/dev/null 2>&1
+}
+do_status(){
+	check_running
+	if [[ $? -eq 0 ]]; then
+		echo -e "${Info} $NAME_BIN (PID $(echo ${PID})) 正在运行..."
+	else
+		echo -e "${Info} $NAME_BIN 未运行 !"
+		RETVAL=1
+	fi
+}
+do_restart(){
+	do_stop
+	do_start
+}
+case "$1" in
+	start|stop|restart|status)
+	do_$1
+	;;
+	*)
+	echo "使用方法: $0 { start | stop | restart | status }"
+	RETVAL=1
+	;;
+esac
+exit $RETVAL
