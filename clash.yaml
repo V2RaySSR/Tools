@@ -102,18 +102,18 @@ Proxy:
 #  # ws-headers:     #默认不开启
 #  #  Host: v2ray.com    # HOST
 
-# Trojan 的配置
-#- name: "trojan"
-#  type: trojan
-#  server: server
-#  port: 443
-#  password: yourpsk
-#  # udp: true
-#  # sni: example.com # aka server name
-#  # alpn:
-#  #   - h2
-#  #   - http/1.1
-#  # skip-cert-verify: true
+ Trojan 的配置
+- name: "xg"
+  type: trojan
+  server: www.ckda.ml
+  port: 443
+  password: e31d8a2e
+  # udp: true
+  # sni: example.com # aka server name
+  # alpn:
+  #   - h2
+  #   - http/1.1
+  # skip-cert-verify: true
 
 
 
